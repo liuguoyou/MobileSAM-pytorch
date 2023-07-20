@@ -17,7 +17,8 @@ cd MobileSAM; pip install -e .
 ## Getting Started
 
 Please carefully check all the file paths in the code!
-Download the retrained MobileSAM encoder from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) 
+
+Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) 
 
 Download SA-1B dataset parts from [here](https://segment-anything.com/dataset/index.html) and unzip them, and then pre-process the dataset using:
 

@@ -25,7 +25,7 @@ Download SA-1B dataset parts from [here](https://segment-anything.com/dataset/in
 ```
 python preprocess.py --dataset_dir <dataset_dir>
 ```
-for example, after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file
+e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file
 
 Distill the knowledge from SAM:
 
@@ -33,7 +33,7 @@ Distill the knowledge from SAM:
 python train.py --optim <optimizer> --learning_rate <lr> --weight_decay <wd> --work_dir <work_dir>
 ```
 
-for example, ```python train.py --optim adamw --learning_rate 1e-3 --weight_decay 5e-4 --work_dir "exp/adamw_lr_1e-3_wd_5e-4"```
+e.g., ```python train.py --optim adamw --learning_rate 1e-3 --weight_decay 5e-4 --work_dir "exp/adamw_lr_1e-3_wd_5e-4"```
 
 
 Evaluate the trained model through segmenting everything and visualize the results:
@@ -42,7 +42,7 @@ Evaluate the trained model through segmenting everything and visualize the resul
 python eval_visual.py --ckpt <checkpoint_path> --save_dir <save_dir>
 ```
 
-for example, ```python eval_visual.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --save_dir vis```
+e.g., ```python eval_visual.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --save_dir vis```
 
 Evaluate the trained model through point prompts and output mIoU:
 

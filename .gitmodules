@@ -1,0 +1,3 @@
+[submodule "MobileSAM"]
+	path = MobileSAM
+	url = https://github.com/ChaoningZhang/MobileSAM.git

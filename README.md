@@ -11,7 +11,7 @@ Clone the Repository:
 git clone --recursive https://github.com/YuYue525/MobileSAM-distiller.git
 cd MobileSAM-distiller
 mv *.py ./MobileSAM
-cd ./MobileSAM; pip install -e .
+cd MobileSAM; pip install -e .
 ```
 
 ## Getting Started

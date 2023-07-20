@@ -6,9 +6,10 @@ Reproduction of MobileSAM using pytorch
 Clone the Repository:
 
 ```
-git clone https://github.com/ChaoningZhang/MobileSAM.git
-cd MobileSAM
-pip install -e .
+git clone --recursive https://github.com/YuYue525/MobileSAM-distiller.git
+cd MobileSAM-distiller
+mv *.py ./MobileSAM
+cd ./MobileSAM; pip install -e .
 ```
 
 ## Getting Started

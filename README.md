@@ -50,4 +50,4 @@ Evaluate the trained model through point prompts and output mIoU:
 python eval_miou.py --ckpt <checkpoint_path>
 ```
 
-for example, ```python eval_miou.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --point_num_h 5 --point_num_w 5```
+e.g., ```python eval_miou.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --point_num_h 5 --point_num_w 5```

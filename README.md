@@ -16,6 +16,8 @@ cd MobileSAM; pip install -e .
 
 ## Getting Started
 
+Please carefully check all the file paths in the code!
+
 Download SA-1B dataset parts from [here](https://segment-anything.com/dataset/index.html) and unzip them, and then pre-process the dataset using:
 
 ```

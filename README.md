@@ -25,7 +25,7 @@ Download SA-1B dataset parts from [here](https://segment-anything.com/dataset/in
 ```
 python preprocess.py --dataset_dir <dataset_dir>
 ```
-for example, after downloading sa_000000.tar, we unzipped the file into the file folder 'sa_000000', we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' .npy file
+for example, after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file
 
 Distill the knowledge from SAM:
 

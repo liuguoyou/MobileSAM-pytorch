@@ -23,6 +23,7 @@ Download the MobileSAM encoder we re-trained from [here](https://drive.google.co
 Download SA-1B dataset parts from [here](https://segment-anything.com/dataset/index.html) and unzip them, and then pre-process the dataset using:
 
 ```
+
 python preprocess.py --dataset_dir <dataset_dir>
 ```
 e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file
@@ -30,10 +31,10 @@ e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file 
 Distill the knowledge from SAM:
 
 ```
-python train.py --optim <optimizer> --learning_rate <lr> --weight_decay <wd> --work_dir <work_dir>
+CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim <optimizer> --learning_rate <lr> --weight_decay <wd> --work_dir <work_dir>
 ```
 
-e.g., ```python train.py --optim adamw --learning_rate 1e-3 --weight_decay 5e-4 --work_dir "exp/adamw_lr_1e-3_wd_5e-4"```
+e.g., ```CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim adamw --learning_rate 0.001 --weight_decay 0.01 --batch_size 16 --epochs 8 --work_dir exp_4card/adamw_lr_1e-3_wd_1e-2_bs_16_epoch_8_v100"```
 
 
 Evaluate the trained model through segmenting everything and visualize the results:

@@ -168,8 +168,8 @@ def main(args):
         train_sampler.set_epoch(epoch)
 
         # training
-        model.train()
         for batch_idx, (imgs, target_feats) in enumerate(train_loader):
+            model.train()
             imgs, target_feats = imgs.cuda(args.local_rank), target_feats.cuda(args.local_rank)
             optimizer.zero_grad()
             pred_feats = model(imgs)

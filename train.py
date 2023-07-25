@@ -1,41 +1,56 @@
 import os
 import numpy as np
 import argparse
+import random
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader
 import torch.backends.cudnn as cudnn
 from tensorboardX import SummaryWriter  
 
-from dataset import transform, get_sa1b_dataloaders
+from dataset import transform, sa1b_dataset
 from mobile_sam.modeling import TinyViT
+
+from torch import distributed as dist
+from torch.utils.data.distributed import DistributedSampler
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
 
+    # dataset paths
     parser.add_argument('--dataset_path', type=str, default="/dataset/vyueyu/sa-1b", help='root path of dataset')
 
+    # training epochs, batch size and so on
     parser.add_argument('--epochs', type=int, default=8, help='number of training epochs')
     parser.add_argument('--num_workers', type=int, default=4, help='num of workers to use')
-    parser.add_argument('--batch_size', type=int, default=4, help='batch_size')
+    parser.add_argument('--batch_size', type=int, default=8, help='batch_size')
 
-    parser.add_argument('--device', type=str, default='cuda', help='device')
+    # multi gpu settings
+    parser.add_argument("--local_rank", type=int, default=-1)
+
+    # cuda settings
+    # parser.add_argument('--device', type=str, default='cuda', help='device')
     parser.add_argument('--seed', type=int, default=1234, help='seed')
     parser.add_argument('--deterministic', type=bool, default=True, help='deterministic')
     parser.add_argument('--benchmark', type=bool, default=False, help='benchmark')
 
+    # learning process settings
     parser.add_argument('--optim', type=str, default='sgd', choices=['adam', 'sgd', 'adamw'])
     parser.add_argument('--learning_rate', type=float, default=0.05, help='learning rate')
     parser.add_argument('--weight_decay', type=float, default=5e-4, help='weight decay')
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 
+    # print and evaluate frequency during training
     parser.add_argument('--print_iters', type=int, default=500, help='print loss iterations')
-
     parser.add_argument('--eval_nums', type=int, default=200, help='evaluation numbers')
     parser.add_argument('--eval_iters', type=int, default=5000, help='evaluation iterations')
 
+    # file and folder paths
     parser.add_argument('--root_path', type=str, default="/dataset/vyueyu/project/MobileSAM", help='root path')
     parser.add_argument('--work_dir', type=str, default="work_dir", help='work directory')
     parser.add_argument('--save_dir', type=str, default="ckpt", help='save directory')
@@ -61,19 +76,6 @@ def build_model():
             )
     return model
 
-def loss_eval(args, model, val_loader, device):
-    model.eval()
-    total_loss = 0
-    with torch.no_grad():
-        for idx, (imgs, target_feats) in enumerate(val_loader):
-            imgs = imgs.to(device)
-            target_feats = target_feats.to(device)
-            pred_feats = model(imgs)
-            loss_fn = get_loss_fn()
-            total_loss += loss_fn(pred_feats, target_feats)
-    
-    return total_loss / len(val_loader)
-
 def get_optimizer(args, model):
     if args.optim == 'adam':
         return optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
@@ -90,23 +92,42 @@ def get_scheduler(args, optimizer):
 def customized_mseloss(pred_feats, target_feats):
     # return (0.5 * (pred_feats - target_feats) ** 2).sum(1).mean()
     return ((pred_feats - target_feats) ** 2).sum(1).mean().sqrt()
+            
+def test(args, model, test_loader):
+    model.eval()
+    test_loss = 0
+    with torch.no_grad():
+        for idx, (imgs, target_feats) in enumerate(test_loader):
+            imgs, target_feats = imgs.cuda(args.local_rank), target_feats.cuda(args.local_rank)
+            pred_feats = model.module(imgs)
+            test_loss += customized_mseloss(pred_feats, target_feats).item()
 
+    return test_loss / len(test_loader)
 
-def get_loss_fn():
-    return customized_mseloss
-    # return nn.MSELoss()
+def reduce_mean(tensor, nprocs):
+    rt = tensor.clone()
+    dist.all_reduce(rt, op=dist.ReduceOp.SUM)
+    rt /= nprocs
+    return rt
     
-def main():
-    args = parse_option()
+def main(args):
 
-    if not os.path.exists(os.path.join(args.root_path, args.work_dir, args.save_dir)):
-        os.makedirs(os.path.join(args.root_path, args.work_dir, args.save_dir))
-    
-    if not os.path.exists(os.path.join(args.root_path, args.work_dir, args.log_dir)):
-        os.makedirs(os.path.join(args.root_path, args.work_dir, args.log_dir))
+    # multi gpu settings
+    torch.cuda.set_device(args.local_rank)
+    device = torch.device('cuda', args.local_rank)
+    torch.distributed.init_process_group(backend='nccl')
 
-    device = args.device
+    # file folder creating
+    if args.local_rank == 0:
+        if not os.path.exists(os.path.join(args.root_path, args.work_dir, args.save_dir)):
+            os.makedirs(os.path.join(args.root_path, args.work_dir, args.save_dir))
+        
+        if not os.path.exists(os.path.join(args.root_path, args.work_dir, args.log_dir)):
+            os.makedirs(os.path.join(args.root_path, args.work_dir, args.log_dir))
 
+    # seed setting
+    random.seed(args.seed)
+    np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(args.seed)
@@ -114,63 +135,79 @@ def main():
         cudnn.deterministic = args.deterministic
         cudnn.benchmark = args.benchmark
     
-    train_dir = ["sa_00000" + str(i) for i in range(10)]
-    val_dir = ['sa_000010']
+    # dataset
+    train_dirs = ["sa_00000" + str(i) for i in range(10)]
+    val_dirs = ['sa_000010']
+    train_dataset = sa1b_dataset(args.dataset_path, train_dirs, transform)
+    val_dataset = sa1b_dataset(args.dataset_path, val_dirs, transform, args.eval_nums)
+    # training sampler
+    train_sampler = DistributedSampler(train_dataset)
+    # data loader
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size // dist.get_world_size(), shuffle=(train_sampler is None), num_workers=args.num_workers, sampler=train_sampler)
+    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=1)
 
-    train_loader, val_loader = get_sa1b_dataloaders(transform, args.dataset_path, train_dir, val_dir, args.batch_size, args.num_workers, args.eval_nums)
+    if args.local_rank == 0:
+        writer = SummaryWriter(os.path.join(args.root_path, args.work_dir, args.log_dir))
 
-    writer = SummaryWriter(os.path.join(args.root_path, args.work_dir, args.log_dir))
-
+    # model
     model = build_model()
     model.to(device)
+    model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank], output_device=args.local_rank, find_unused_parameters=True)
     
+    # optimizer and scheduler
     optimizer = get_optimizer(args, model)
     scheduler = get_scheduler(args, optimizer)
 
-    iters = 0
-    
+    total_iters = 0
+
     for epoch in range(1, args.epochs + 1):
-        print("------start epoch {}------".format(epoch))
+        # new epoch
+        if args.local_rank == 0:
+            print("------start epoch {}------".format(epoch))
+        train_sampler.set_epoch(epoch)
 
-        for idx, (imgs, target_feats) in enumerate(train_loader):
-            model.train()
-            imgs = imgs.to(device)
-            target_feats = target_feats.to(device)
-
+        # training
+        model.train()
+        for batch_idx, (imgs, target_feats) in enumerate(train_loader):
+            imgs, target_feats = imgs.cuda(args.local_rank), target_feats.cuda(args.local_rank)
             optimizer.zero_grad()
             pred_feats = model(imgs)
-            loss_fn = get_loss_fn()
-            loss = loss_fn(pred_feats, target_feats)
+            loss = customized_mseloss(pred_feats, target_feats)
             loss.backward()
             optimizer.step()
+            loss = reduce_mean(loss, dist.get_world_size())
 
-            iters += 1
+            total_iters += 1
 
-            if iters % args.print_iters == 0:
-                print("iter {}: mseloss {}".format(iters, loss.item()))
-                writer.add_scalar("mse_loss", loss.item(), iters)
+            # if is master process
+            if args.local_rank == 0:
+                # print training info
+                if (batch_idx + 1) % args.print_iters == 0:
+                    print('Train Epoch: {} [{}/{} ({:.0f}%)]\tMSE Loss: {:.6f}'.format(
+                        epoch, batch_idx * len(imgs) * dist.get_world_size(), len(train_loader.dataset),
+                            100. * batch_idx / len(train_loader), loss.item()))
+                    writer.add_scalar("mse_loss", loss.item(), total_iters)
+                
+                # save model
+                if total_iters % args.save_iters == 0:
+                    save_path = os.path.join(args.root_path, args.work_dir, args.save_dir, "iter_" + str(total_iters) + ".pth")
+                    print("save model to {}".format(save_path))
+                    torch.save(model.module.state_dict(), save_path)
 
-            if iters % args.save_iters == 0:
-                save_path = os.path.join(args.root_path, args.work_dir, args.save_dir, str(iters) + ".pth")
-                print("save model to {}".format(save_path))
-                torch.save(model.state_dict(), save_path)
+                # evaluation
+                if total_iters % args.eval_iters == 0:
+                    test_loss = test(args, model, val_loader)
+                    print('\nIter: {} Test set Average loss: {:.4f}\n'.format(total_iters, test_loss))
+                    writer.add_scalar("eval_mse_loss", test_loss, total_iters)
 
-            if iters % args.eval_iters == 0:
-                eval_loss = loss_eval(args, model, val_loader, device)
-                writer.add_scalar("eval_mse_loss", eval_loss, iters)
-                print("---iter {} eval loss: {}---".format(iters, eval_loss))
-        
+        dist.barrier()
         scheduler.step()
 
-    torch.save(model.state_dict(), os.path.join(args.root_path, args.work_dir, args.save_dir, "final.pth"))
+    # save final model
+    torch.save(model.module.state_dict(), os.path.join(args.root_path, args.work_dir, args.save_dir, "iter_final.pth"))
+    writer.close()
 
 if __name__ == "__main__":
-    main()
-
-
-
-
-    
-
-
-
+    args = parse_option()
+    main(args)

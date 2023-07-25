@@ -2,6 +2,7 @@ import os
 import numpy as np
 import argparse
 import random
+import cv2
 
 import torch
 import torch.nn as nn
@@ -11,7 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch.backends.cudnn as cudnn
 from tensorboardX import SummaryWriter  
 
-from dataset import transform, sa1b_dataset
+from dataset_multi_gpu import transform, sa1b_dataset
 from mobile_sam.modeling import TinyViT
 
 from torch import distributed as dist
@@ -46,9 +47,9 @@ def parse_option():
     parser.add_argument('--momentum', type=float, default=0.9, help='momentum')
 
     # print and evaluate frequency during training
-    parser.add_argument('--print_iters', type=int, default=500, help='print loss iterations')
+    parser.add_argument('--print_iters', type=int, default=200, help='print loss iterations')
     parser.add_argument('--eval_nums', type=int, default=200, help='evaluation numbers')
-    parser.add_argument('--eval_iters', type=int, default=5000, help='evaluation iterations')
+    parser.add_argument('--eval_iters', type=int, default=500, help='evaluation iterations')
 
     # file and folder paths
     parser.add_argument('--root_path', type=str, default="/dataset/vyueyu/project/MobileSAM", help='root path')
@@ -143,8 +144,8 @@ def main(args):
     # training sampler
     train_sampler = DistributedSampler(train_dataset)
     # data loader
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size // dist.get_world_size(), shuffle=(train_sampler is None), num_workers=args.num_workers, sampler=train_sampler)
-    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=1)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None), num_workers=args.num_workers, sampler=train_sampler, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
     if args.local_rank == 0:
         writer = SummaryWriter(os.path.join(args.root_path, args.work_dir, args.log_dir))
@@ -168,8 +169,8 @@ def main(args):
         train_sampler.set_epoch(epoch)
 
         # training
+        model.train()
         for batch_idx, (imgs, target_feats) in enumerate(train_loader):
-            model.train()
             imgs, target_feats = imgs.cuda(args.local_rank), target_feats.cuda(args.local_rank)
             optimizer.zero_grad()
             pred_feats = model(imgs)
@@ -196,17 +197,20 @@ def main(args):
                     torch.save(model.module.state_dict(), save_path)
 
                 # evaluation
+                '''
                 if total_iters % args.eval_iters == 0:
                     test_loss = test(args, model, val_loader)
-                    print('\nIter: {} Test set Average loss: {:.4f}\n'.format(total_iters, test_loss))
+                    print('\nTest set: Average loss: {:.4f}\n'.format(test_loss))
                     writer.add_scalar("eval_mse_loss", test_loss, total_iters)
+                '''
 
         dist.barrier()
         scheduler.step()
 
     # save final model
-    torch.save(model.module.state_dict(), os.path.join(args.root_path, args.work_dir, args.save_dir, "iter_final.pth"))
-    writer.close()
+    if args.local_rank == 0:
+        torch.save(model.module.state_dict(), os.path.join(args.root_path, args.work_dir, args.save_dir, "iter_final.pth"))
+        writer.close()
 
 if __name__ == "__main__":
     args = parse_option()

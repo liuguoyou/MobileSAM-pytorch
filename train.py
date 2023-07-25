@@ -12,13 +12,13 @@ from torch.utils.data import Dataset, DataLoader
 import torch.backends.cudnn as cudnn
 from tensorboardX import SummaryWriter  
 
-from dataset_multi_gpu import transform, sa1b_dataset
+from dataset import transform, sa1b_dataset
 from mobile_sam.modeling import TinyViT
 
 from torch import distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')

@@ -18,7 +18,7 @@ from mobile_sam.modeling import TinyViT
 from torch import distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
@@ -144,8 +144,8 @@ def main(args):
     # training sampler
     train_sampler = DistributedSampler(train_dataset)
     # data loader
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=(train_sampler is None), num_workers=args.num_workers, sampler=train_sampler, drop_last=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size // dist.get_world_size(), shuffle=(train_sampler is None), num_workers=args.num_workers, sampler=train_sampler, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size // dist.get_world_size(), shuffle=False, num_workers=args.num_workers)
 
     if args.local_rank == 0:
         writer = SummaryWriter(os.path.join(args.root_path, args.work_dir, args.log_dir))

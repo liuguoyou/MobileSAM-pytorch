@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import random
 import cv2
+import json
 
 import torch
 import torch.nn as nn
@@ -98,7 +99,7 @@ def test(args, model, test_loader):
     model.eval()
     test_loss = 0
     with torch.no_grad():
-        for idx, (imgs, target_feats) in enumerate(test_loader):
+        for idx, (imgs, target_feats, mask_paths) in enumerate(test_loader):
             imgs, target_feats = imgs.cuda(args.local_rank), target_feats.cuda(args.local_rank)
             pred_feats = model.module(imgs)
             test_loss += customized_mseloss(pred_feats, target_feats).item()
@@ -137,8 +138,8 @@ def main(args):
         cudnn.benchmark = args.benchmark
     
     # dataset
-    train_dirs = ["sa_00000" + str(i) for i in range(10)]
-    val_dirs = ['sa_000010']
+    train_dirs = ["sa_00000" + str(i) for i in range(10)] + ["sa_0000" + str(i) for i in range(10, 20)]
+    val_dirs = ['sa_000020']
     train_dataset = sa1b_dataset(args.dataset_path, train_dirs, transform)
     val_dataset = sa1b_dataset(args.dataset_path, val_dirs, transform, args.eval_nums)
     # training sampler
@@ -170,7 +171,9 @@ def main(args):
 
         # training
         model.train()
-        for batch_idx, (imgs, target_feats) in enumerate(train_loader):
+        for batch_idx, (imgs, target_feats, mask_paths) in enumerate(train_loader):
+            total_iters += 1
+            
             imgs, target_feats = imgs.cuda(args.local_rank), target_feats.cuda(args.local_rank)
             optimizer.zero_grad()
             pred_feats = model(imgs)
@@ -178,9 +181,7 @@ def main(args):
             loss.backward()
             optimizer.step()
             loss = reduce_mean(loss, dist.get_world_size())
-
-            total_iters += 1
-
+            
             # if is master process
             if args.local_rank == 0:
                 # print training info

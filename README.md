@@ -5,6 +5,9 @@ Reproduction of MobileSAM using pytorch
 
 ### environment preparation
 
+Please use ```conda``` to create an environment:
+
+
 Clone the Repository:
 
 ```

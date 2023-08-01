@@ -1,6 +1,5 @@
-from __future__ import print_function
-
 import os
+import json
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -36,7 +35,8 @@ class sa1b_dataset(Dataset):
             img = self.transformer(img)
 
         feat = np.load(self.img_paths[index].replace(".jpg", ".npy")).squeeze()
-        return img, feat
+
+        return img, feat, self.img_paths[index].replace(".jpg", ".json")
     
 def transform(x, img_size=1024):
     """Normalize pixel values and pad to a square input."""
@@ -72,4 +72,3 @@ if __name__ == "__main__":
     transformer = transform
     train_loader, val_loader = get_sa1b_dataloaders(transformer, root_path, train_dirs, val_dirs)
     print(len(val_loader))
-

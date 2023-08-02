@@ -25,12 +25,20 @@ pip install -r requirements.txt
 Please carefully check all the file paths in the code!
 Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) 
 
-### dataset preparation
+## dataset preparation
 
 Download SA-1B dataset parts from [here](https://segment-anything.com/dataset/index.html) and unzip them, and then pre-process the dataset using:
 
 ```
-python preprocess.py --dataset_dir <dataset_dir>
+# dataset downloading in dataset dir
+wget -b -c -O "sa_<index>.tar" "<link>"
+
+# unzip the downloaded file
+mkdir sa_<index>
+tar -xvf sa_<index>.tar -C sa_<index>
+
+# data preprocess: extract features by SAM teacher as "target" and save them as .npy
+python preprocess.py --dataset_dir sa_<index>
 ```
 
 e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file. In our experiments, we downloaded 2% SA-1B dataset as our training set (from ```sa_000000``` to ```sa_000019```) and another 0.1% as our validation set (```sa_000020```).

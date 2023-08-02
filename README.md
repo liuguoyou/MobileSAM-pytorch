@@ -54,6 +54,15 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
 
 e.g., ```CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim adamw --learning_rate 0.001 --weight_decay 0.0005 --batch_size 8 --epochs 16 --work_dir exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16"```
 
+## Model Aggregation
+
+Noticed that our trained model is only the <b>image encoder</b> part of the whole MobileSAM model. To aggregate the trained encoder with freezed prompt encoder and mask decoder, please run:
+
+```
+python model_aggregation.py --ckpt <pth_path> --save_model_path <save_path> --save_model_name <model_name>
+```
+e.g., ```python model_aggregation.py --ckpt exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16/ckpt/final.pth --save_model_path weights --save_model_name adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16.pth```
+
 ## Evaluation
 
 Evaluate the trained model through segmenting everything and visualize the results:

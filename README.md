@@ -20,11 +20,13 @@ Please use ```conda``` to create an environment and download all the packages re
 pip install -r requirements.txt 
 ```
 
+
 ## Getting Started
 
 Please carefully check all the file paths in the code.
 
 Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage.
+
 
 ## Dataset Preparation
 
@@ -43,6 +45,7 @@ python preprocess.py --dataset_dir sa_<index>
 ```
 
 e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file. In our experiments, we downloaded 2% SA-1B dataset as our training set (from ```sa_000000``` to ```sa_000019```) and another 0.1% as our validation set (```sa_000020```).
+
 
 ## Distillation Process
 

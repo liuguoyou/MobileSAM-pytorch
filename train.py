@@ -138,7 +138,7 @@ def main(args):
         cudnn.benchmark = args.benchmark
     
     # dataset
-    train_dirs = ["sa_00000" + str(i) for i in range(10)] + ["sa_0000" + str(i) for i in range(10, 20)]
+    train_dirs = ["sa_" + str(i).zfill(6) for i in range(20)]
     val_dirs = ['sa_000020']
     train_dataset = sa1b_dataset(args.dataset_path, train_dirs, transform)
     val_dataset = sa1b_dataset(args.dataset_path, val_dirs, transform, args.eval_nums)

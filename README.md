@@ -56,7 +56,7 @@ e.g., ```CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc
 
 ## Model Aggregation
 
-Noticed that our trained model is only the <b>image encoder</b> part of the whole MobileSAM model. To aggregate the trained encoder with freezed prompt encoder and mask decoder, please run:
+Note that our trained model is only the <b>image encoder</b> part of the whole MobileSAM model. To aggregate the trained encoder with freezed prompt encoder and mask decoder, please run:
 
 ```
 python model_aggregation.py --ckpt <pth_path> --save_model_path <save_path> --save_model_name <model_name>

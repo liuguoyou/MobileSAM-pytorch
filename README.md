@@ -82,6 +82,15 @@ python eval_miou.py --ckpt <checkpoint_path>
 e.g., ```python eval_miou.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --point_num_h 5 --point_num_w 5```
 
 
+## ONNX Export
+
+Export the model with
+
+```
+python scripts/export_onnx_model.py --checkpoint ./weights/mobile_sam.pt --model-type vit_t --output ./mobile_sam.onnx
+```
+
+Also check the [example notebook](https://github.com/ChaoningZhang/MobileSAM/blob/master/notebooks/onnx_model_example.ipynb) to follow detailed steps.
 
 
 ## Acknowledgement

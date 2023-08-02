@@ -4,7 +4,7 @@ Reproduction of MobileSAM using pytorch
 
 Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage.
 
-See some results in the folder ```vis_results```
+Please find some visualization results in folder ```vis_results```
 
 ## Installation
 

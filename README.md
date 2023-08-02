@@ -1,5 +1,8 @@
 # MobileSAM-distiller
+
 Reproduction of MobileSAM using pytorch
+
+Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage.
 
 ## Installation
 
@@ -19,14 +22,6 @@ Please use ```conda``` to create an environment and download all the packages re
 ```
 pip install -r requirements.txt 
 ```
-
-
-## Getting Started
-
-Please carefully check all the file paths in the code.
-
-Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage.
-
 
 ## Dataset Preparation
 
@@ -48,6 +43,8 @@ e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file 
 
 
 ## Distillation Process
+
+Please carefully check all the file paths in the code!
 
 We can distill the knowledge from SAM to our MobileSAM using the following command:
 

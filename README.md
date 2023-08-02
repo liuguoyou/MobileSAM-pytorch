@@ -65,22 +65,13 @@ e.g., ```python model_aggregation.py --ckpt exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch
 
 ## Evaluation
 
-Evaluate the trained model through segmenting everything and visualize the results:
+We evaluate the model through segmenting everything and visualize the results by indicating ```--vis```, and evaluate the mIoU compared with SAM results by indicating ```--miou```
 
 ```
-python eval_visual.py --ckpt <checkpoint_path> --save_dir <save_dir>
+python eval.py --ckpt <checkpoint_path> --work_dir <work_dir> --vis True --miou True
 ```
 
-e.g., ```python eval_visual.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --save_dir vis```
-
-Evaluate the trained model through point prompts and output mIoU:
-
-```
-python eval_miou.py --ckpt <checkpoint_path>
-```
-
-e.g., ```python eval_miou.py --ckpt "exp/adamw_lr_1e-3_v100/ckpt/final.pth" --point_num_h 5 --point_num_w 5```
-
+e.g., ```python eval.py --ckpt exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16/ckpt/final.pth --work_dir exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16 --vis True --miou True```
 
 ## ONNX Export
 

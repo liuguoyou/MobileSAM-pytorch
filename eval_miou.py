@@ -43,14 +43,14 @@ def eval_miou(pred_masks, target_masks):
 def parse_option():
     parser = argparse.ArgumentParser('argument for evaluation')
 
-    parser.add_argument('--dataset_path', type=str, default="/dataset/vyueyu/sa-1b/sa_000010", help='root path of dataset')
+    parser.add_argument('--dataset_path', type=str, default="/dataset/vyueyu/sa-1b/sa_000020", help='root path of dataset')
 
     parser.add_argument('--device', type=str, default='cuda', help='device')
 
     parser.add_argument('--point_num_h', type=int, default=5)
     parser.add_argument('--point_num_w', type=int, default=5)
     parser.add_argument('--eval_num', type=int, default=200)
-    parser.add_argument('--data_idx_offset', type=int, default=111877)
+    parser.add_argument('--data_idx_offset', type=int, default=223750)
 
     parser.add_argument('--ckpt', type=str, default="/dataset/vyueyu/project/MobileSAM/exp/adamw_lr_1e-3_v100/ckpt/final.pth")
 

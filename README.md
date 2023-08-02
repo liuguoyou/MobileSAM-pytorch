@@ -35,7 +35,9 @@ python preprocess.py --dataset_dir <dataset_dir>
 
 e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file. In our experiments, we downloaded 2% SA-1B dataset as our training set (from ```sa_000000``` to ```sa_000019```) and another 0.1% as our validation set (```sa_000020```).
 
-Distill the knowledge from SAM:
+### distillation process
+
+We can distill the knowledge from SAM to our MobileSAM using the following command:
 
 ```
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim <optimizer> --learning_rate <lr> --weight_decay <wd> --work_dir <work_dir>
@@ -43,6 +45,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
 
 e.g., ```CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim adamw --learning_rate 0.001 --weight_decay 0.0005 --batch_size 8 --epochs 16 --work_dir exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16"```
 
+### Evaluation
 
 Evaluate the trained model through segmenting everything and visualize the results:
 

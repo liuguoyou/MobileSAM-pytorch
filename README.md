@@ -22,8 +22,9 @@ pip install -r requirements.txt
 
 ## Getting Started
 
-Please carefully check all the file paths in the code!
-Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) 
+Please carefully check all the file paths in the code.
+
+Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage.
 
 ## Dataset Preparation
 

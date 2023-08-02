@@ -3,15 +3,6 @@ Reproduction of MobileSAM using pytorch
 
 ## Installation
 
-### environment preparation
-
-Please use ```conda``` to create an environment and download all the packages required (we use ```python==3.8.13```, ```ptorch==1.13.0+cu117```, ```torchvision==0.14.0+cu117```):
-
-```
-pip 
-```
-
-
 Clone the Repository:
 
 ```
@@ -19,6 +10,14 @@ git clone --recursive https://github.com/YuYue525/MobileSAM-distiller.git
 cd MobileSAM-distiller
 mv *.py ./MobileSAM
 cd MobileSAM; pip install -e .
+```
+
+### environment preparation
+
+Please use ```conda``` to create an environment and download all the packages required (we use ```python==3.8.13```, ```ptorch==1.13.0+cu117```, ```torchvision==0.14.0+cu117```):
+
+```
+pip install -r requirements.txt 
 ```
 
 ## Getting Started

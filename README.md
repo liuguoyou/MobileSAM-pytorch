@@ -8,9 +8,9 @@ Reproduction of MobileSAM using pytorch. Please star it if it helps you, thank y
 </br>
 </p>
 
-Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage. We provide the whole retrained mobilesam model weights ```retrained_mobilesam.pth```, and the only image encoder part ```image_emcoder.pth``` for your reference.
+* Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage. We provide the whole retrained mobilesam model weights ```retrained_mobilesam.pth```, and the only image encoder part ```image_emcoder.pth``` for your reference.
 
-Please find visualization results in folder [vis](https://github.com/YuYue525/MobileSAM-distiller/tree/main/vis). We compared [SAM](https://github.com/facebookresearch/segment-anything), [MobileSAM](https://github.com/ChaoningZhang/MobileSAM) and our reimplemented version of MobileSAM.
+* Please find visualization results in folder [vis](https://github.com/YuYue525/MobileSAM-distiller/tree/main/vis). We compared [SAM](https://github.com/facebookresearch/segment-anything), [MobileSAM](https://github.com/ChaoningZhang/MobileSAM) and our reimplemented version of MobileSAM.
 
 ## Installation
 

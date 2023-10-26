@@ -41,7 +41,9 @@ tar -xvf sa_<index>.tar -C sa_<index>
 python preprocess.py --dataset_dir sa_<index>
 ```
 
-e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file. In our experiments, we downloaded 2% SA-1B dataset as our training set (from ```sa_000000``` to ```sa_000019```) and another 0.1% as our validation set (```sa_000020```).
+Note: the purpose of pre-processing is to save the SAM output feature maps to the local hard drive, then there is no need to do SAM for forward inference during training. This method is also mentioned in MobileSAM paper. Therefore, please make sure your hard drive has enough space！(around 500GB for 1% SA-1B after pre-processing)
+
+e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file folder ```sa_000000```, we can run ```python preprocess.py --dataset_dir sa_000000``` to pre-process the data to generate features' ```.npy``` file. In our experiments, we downloaded 1% SA-1B dataset as our training set (from ```sa_000000``` to ```sa_000009```) and another 0.1% as our validation set (```sa_000010```).
 
 
 ## Distillation Process

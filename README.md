@@ -1,6 +1,6 @@
 # MobileSAM-distiller
 
-Reproduction of MobileSAM using pytorch
+Reproduction of MobileSAM using pytorch. Please star it if it helps you, thank you!
 
 Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage. We provide the whole retrained mobilesam model weights ```retrained_mobilesam.pth```, and the only image encoder part ```image_emcoder.pth``` for your reference.
 

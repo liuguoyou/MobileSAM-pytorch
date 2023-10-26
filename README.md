@@ -4,7 +4,7 @@ Reproduction of MobileSAM using pytorch. Please star it if it helps you, thank y
 
 <p align="center">
 <img src="vis/223754.jpg?raw=true" width="99.1%" /></br>
-<b>From left to right: SAM result, MobileSAM result, our re-implemented MobileSAM result.
+<b>From left to right: SAM result, MobileSAM result, our re-implemented MobileSAM result.</b>
 </br>
 </p>
 

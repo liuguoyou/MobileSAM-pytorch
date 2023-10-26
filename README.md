@@ -4,8 +4,9 @@ Reproduction of MobileSAM using pytorch. Please star it if it helps you, thank y
 
 <p float="center">
   <img src="vis/223754.jpg?raw=true" width="99.1%" />
+  <b>From left to right: SAM result, MobileSAM result, our re-implemented MobileSAM result
+</br>
 </p>
-<p float="center">From left to right: SAM result, MobileSAM result, our re-implemented MobileSAM result.</p>
 
 Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage. We provide the whole retrained mobilesam model weights ```retrained_mobilesam.pth```, and the only image encoder part ```image_emcoder.pth``` for your reference.
 

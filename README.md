@@ -23,7 +23,7 @@ mv *.py ./MobileSAM
 cd MobileSAM; pip install -e .
 ```
 
-### environment preparation
+### Environment Preparation
 
 Please use ```conda``` to create an environment and download all the packages required (we use ```python==3.8.13```, ```ptorch==1.13.0+cu117```, ```torchvision==0.14.0+cu117```):
 

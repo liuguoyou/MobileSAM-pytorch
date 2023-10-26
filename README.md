@@ -8,6 +8,13 @@ Reproduction of MobileSAM using pytorch. Please star it if it helps you, thank y
 </br>
 </p>
 
+<p align="center">
+<img src="vis/223754.jpg?raw=true" width="99.1%" /></br>
+<b>Inference memory v.s. mIoU</b> on the <a href="https://arxiv.org/abs/1805.06561">DeepGlobe dataset</a>.
+</br>
+GLNet (red dots) integrates both global and local information in a compact way, contributing to a well-balanced trade-off between accuracy and memory usage.</br>
+</p>
+
 Download the MobileSAM encoder we re-trained from [here](https://drive.google.com/drive/folders/1kzdY2GuJM3B8ssZWOBJhqWXx-QaEPT9e?usp=drive_link) for your usage. We provide the whole retrained mobilesam model weights ```retrained_mobilesam.pth```, and the only image encoder part ```image_emcoder.pth``` for your reference.
 
 Please find visualization results in folder [vis](https://github.com/YuYue525/MobileSAM-distiller/tree/main/vis). We compared [SAM](https://github.com/facebookresearch/segment-anything), [MobileSAM](https://github.com/ChaoningZhang/MobileSAM) and our reimplemented version of MobileSAM.

@@ -1,4 +1,4 @@
-# MobileSAM-distiller
+# MobileSAM-pytorch
 
 Reproduction of MobileSAM using pytorch. Please star it if it helps you, thank you!
 

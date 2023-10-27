@@ -54,13 +54,14 @@ e.g., after downloading ```sa_000000.tar```, we unzipped the file into the file 
 
 ## Distillation Process
 
-Please carefully check all the file paths in the code!
-
 We can distill the knowledge from SAM to our MobileSAM using the following command:
 
 ```
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim <optimizer> --learning_rate <lr> --weight_decay <wd> --work_dir <work_dir>
 ```
+
+> [!NOTE]
+> Please carefully check all the file paths in the code!
 
 e.g., ```CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 train.py --optim adamw --learning_rate 0.001 --weight_decay 0.0005 --batch_size 8 --epochs 16 --work_dir exp/adamw_lr_1e-3_wd_5e-4_bs_8_epoch_16"```
 
